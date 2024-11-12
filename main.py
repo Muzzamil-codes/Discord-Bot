@@ -3,6 +3,7 @@ from Image_module import Image_maker
 import requests
 import json
 import discord
+from discord import app_commands
 from discord.ext import commands
 import random 
 from bot_token import token as tk
@@ -18,6 +19,35 @@ client = commands.Bot(command_prefix="DuDe ", intents=intents)
 async def on_ready():
     print(f"{client.user.name} is ready.")
 
+"-----------------------------------------------------------SLASH COMMANDS-----------------------------------------------------------"
+
+@client.command()
+async def sync(ctx):
+    await client.tree.sync()
+    await ctx.send("Slash commands have been synced")
+
+@client.tree.command()
+@app_commands.allowed_installs(guilds=False, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+async def shit(interacion: discord.Interaction, user: discord.User):
+    g_member = str(user)
+    Image_maker(g_member)
+    with open("created_image.png", 'rb') as f:
+        picture = discord.File(f)
+        await interacion.response.send_message(file=picture)
+    os.remove("created_image.png")
+
+@client.tree.command()
+@app_commands.allowed_installs(guilds=False, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+async def kill(interacion: discord.Interaction, user: discord.User):
+    kill_sentence = f"{user.mention} was shot by Narendra Modi"
+    with open('pm.jpg', 'rb') as f:
+        picture = discord.File(f)
+        await interacion.response.send_message(kill_sentence, file=picture)
+
+
+"-----------------------------------------------------------SLASH COMMANDS END-------------------------------------------------------"
 
 def get_quote():
     response = requests.get("https://zenquotes.io/api/random")
@@ -319,7 +349,6 @@ async def kill(ctx, member: discord.Member):
 @client.command()
 async def shit(ctx, member: discord.Member):
     g_member = str(member)
-    g_member = g_member
     Image_maker(g_member)
     with open("created_image.png", 'rb') as f:
         picture = discord.File(f)
